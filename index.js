@@ -89,6 +89,7 @@ uniforms["mieDirectionalG"].value = 0.8;
 const parameters = {
   inclination: 0.4373,
   azimuth: 0.287,
+  sun: true,
 };
 
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -143,6 +144,12 @@ function guiControl() {
   skyFolder.add(parameters, "inclination", 0, 0.5, 0.0001).onChange(updateSun);
   skyFolder.add(parameters, "azimuth", 0, 1, 0.0001).onChange(updateSun);
   skyFolder.open();
+  skyFolder.add(parameters, "sun").onChange((val) => {
+    parameters.sun = val;
+    if (val) scene.add(sky);
+    else scene.remove(sky);
+    animate();
+  });
 
   const waterFolder = gui.addFolder("Water");
   waterFolder
@@ -189,12 +196,17 @@ function guiControl() {
 guiControl();
 
 // Render loop to draw the scene every time the screen refreshes
+let prevTime = performance.now(),
+  newTime,
+  delta;
 function animate() {
   requestAnimationFrame(animate);
 
   // Rotation
-  //   const time = performance.now() * 0.001;
-  if (enableRotatePlane) airplane.rotation.y += 0.01;
+  newTime = performance.now();
+  delta = newTime - prevTime;
+  prevTime = newTime;
+  if (enableRotatePlane) airplane.rotation.y += delta * 0.0005;
 
   // water update
   water.material.uniforms["time"].value += 1.0 / 60.0;
