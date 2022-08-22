@@ -50,6 +50,23 @@ loader.load(
     console.error("Error happened:", error);
   }
 );
+let mountain;
+loader.load(
+  "resources/valley/scene.gltf",
+  function (gltf) {
+    mountain = gltf.scene;
+    // valley
+    mountain.position.y = -70;
+    mountain.scale.set(500, 500, 500);
+    scene.add(gltf.scene);
+  },
+  function (xhr) {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+  },
+  function (error) {
+    console.error("Error happened:", error);
+  }
+);
 
 // CREATE SUN, SKY
 // Sun is light source thats infinitely far away
@@ -73,6 +90,7 @@ const water = new Water(waterGeometry, {
   fog: scene.fog !== undefined,
 });
 water.rotation.x = -Math.PI / 2;
+water.position.y = -15;
 
 scene.add(water);
 
@@ -90,6 +108,8 @@ const parameters = {
   inclination: 0.4373,
   azimuth: 0.287,
   sun: true,
+  water: true,
+  mountain: true,
 };
 
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -114,8 +134,10 @@ updateSun();
 let ambientLight = new THREE.AmbientLight(0xffffff, 0.001);
 scene.add(ambientLight);
 // POINT LIGHT
-let pointLight = new THREE.PointLight(0x097969, 0.1);
+let pointLight = new THREE.PointLight(0xff0000, 0.1);
 pointLight.position.set(-15, 10, 5);
+pointLight.decay = 2;
+pointLight.distance = 100;
 scene.add(pointLight);
 // POINT LIGHT HELPER
 const lightHelper = new THREE.PointLightHelper(pointLight);
@@ -133,8 +155,10 @@ const airplaneParameters = {
   // Light
   "ambient color": ambientLight.color.getHex(),
   "ambient intensity": ambientLight.intensity,
-  "pointLight color": pointLight.color.getHex(),
-  "pointLight intensity": pointLight.intensity,
+  "point light color": pointLight.color.getHex(),
+  "point light intensity": pointLight.intensity,
+  "distance": pointLight.distance,
+  "decay": pointLight.decay
 };
 function guiControl() {
   // GUI Control Box
@@ -143,13 +167,13 @@ function guiControl() {
   const skyFolder = gui.addFolder("Sky");
   skyFolder.add(parameters, "inclination", 0, 0.5, 0.0001).onChange(updateSun);
   skyFolder.add(parameters, "azimuth", 0, 1, 0.0001).onChange(updateSun);
-  skyFolder.open();
   skyFolder.add(parameters, "sun").onChange((val) => {
     parameters.sun = val;
     if (val) scene.add(sky);
     else scene.remove(sky);
     animate();
   });
+  skyFolder.open();
 
   const waterFolder = gui.addFolder("Water");
   waterFolder
@@ -158,6 +182,18 @@ function guiControl() {
   waterFolder
     .add(water.material.uniforms.size, "value", 0.1, 10, 0.1)
     .name("size");
+  waterFolder.add(parameters, "water").onChange((val) => {
+    parameters.water = val;
+    if (val) scene.add(water);
+    else scene.remove(water);
+    animate();
+  });
+  waterFolder.add(parameters, "mountain").onChange((val) => {
+    parameters.mountain = val;
+    if (val) scene.add(mountain);
+    else scene.remove(mountain);
+    animate();
+  });
   waterFolder.open();
 
   const airplaneFolder = gui.addFolder("Airplane");
@@ -183,14 +219,20 @@ function guiControl() {
     .addColor(airplaneParameters, "ambient color")
     .onChange((col) => ambientLight.color.setHex(col));
   lightFolder
-    .add(airplaneParameters, "ambient intensity", 0.001, 1, 0.0001)
+    .add(airplaneParameters, "ambient intensity", 0.001, 1, 0.001)
     .onChange((intensity) => (ambientLight.intensity = intensity));
   lightFolder
-    .addColor(airplaneParameters, "pointLight color")
+    .addColor(airplaneParameters, "point light color")
     .onChange((col) => pointLight.color.setHex(col));
   lightFolder
-    .add(airplaneParameters, "pointLight intensity", 0.001, 2, 0.0001)
+    .add(airplaneParameters, "point light intensity", 0.001, 3, 0.001)
     .onChange((intensity) => (pointLight.intensity = intensity));
+  lightFolder
+    .add(airplaneParameters, "distance", 1, 250, 1)
+    .onChange((dist) => (pointLight.distance = dist));
+  lightFolder
+    .add(airplaneParameters, "decay", 1, 5, 0.1)
+    .onChange((decay) => (pointLight.decay = decay));
   lightFolder.open();
 }
 guiControl();

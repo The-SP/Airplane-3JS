@@ -1,0 +1,11 @@
+Model Information:
+* title:	World Machine Landscape 01 - Mountain Valley
+* source:	https://sketchfab.com/3d-models/world-machine-landscape-01-mountain-valley-6ddb2a04269e4826ae7fa95fdbdc0f6f
+* author:	TheByteForge (https://sketchfab.com/TheByteForge)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "World Machine Landscape 01 - Mountain Valley" (https://sketchfab.com/3d-models/world-machine-landscape-01-mountain-valley-6ddb2a04269e4826ae7fa95fdbdc0f6f) by TheByteForge (https://sketchfab.com/TheByteForge) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
