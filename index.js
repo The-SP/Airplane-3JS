@@ -1,4 +1,3 @@
-// import * as THREE from "../node_modules/three/build/three.module.js"
 import * as THREE from "three";
 import { OrbitControls } from "../node_modules/three/examples/jsm/controls/OrbitControls.js";
 import { GUI } from "../node_modules/three/examples/jsm/libs/lil-gui.module.min.js";
@@ -130,7 +129,7 @@ function updateSun() {
 
 updateSun();
 
-// AMBIENT LIGHT -----------------------------------
+// AMBIENT LIGHT
 let ambientLight = new THREE.AmbientLight(0xffffff, 0.001);
 scene.add(ambientLight);
 // POINT LIGHT
@@ -225,7 +224,7 @@ function guiControl() {
     .addColor(airplaneParameters, "point light color")
     .onChange((col) => pointLight.color.setHex(col));
   lightFolder
-    .add(airplaneParameters, "point light intensity", 0.001, 3, 0.001)
+    .add(airplaneParameters, "point light intensity", 0.001, 5, 0.001)
     .onChange((intensity) => (pointLight.intensity = intensity));
   lightFolder
     .add(airplaneParameters, "distance", 1, 250, 1)
@@ -237,10 +236,10 @@ function guiControl() {
 }
 guiControl();
 
-// Render loop to draw the scene every time the screen refreshes
 let prevTime = performance.now(),
-  newTime,
-  delta;
+newTime,
+delta;
+// Render loop to draw the scene every time the screen refreshes
 function animate() {
   requestAnimationFrame(animate);
 
@@ -251,8 +250,16 @@ function animate() {
   if (enableRotatePlane) airplane.rotation.y += delta * 0.0005;
 
   // water update
-  water.material.uniforms["time"].value += 1.0 / 60.0;
+  water.material.uniforms["time"].value += 1.0 / 100.0;
 
   renderer.render(scene, camera);
 }
+
+window.addEventListener('resize', onWindowResize, false);
+function onWindowResize() {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
 animate();
